@@ -1,0 +1,63 @@
+initialize DEPLOY  = false
+initialize RETURN  = false
+initialize STATION = false
+initialize TRAIL   = false
+
+//-----------------------------------------------
+// Helm Behavior File
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE    = ACTIVE
+	ODOMETRY_DIST > 250
+} 
+
+set MODE = RETURNING {
+  MODE    = ACTIVE
+  RETURN  = true
+} 
+
+set MODE = STATIONING {
+  MODE    = ACTIVE
+  STATION = true
+} 
+
+set MODE = TRAILING {
+  MODE    = ACTIVE
+	TRAIL   = true
+  STATION = false
+  (CHASER  = any) or (CHASER = ben)
+} 
+	
+	
+//----------------------------------------------
+Behavior = BHV_Trail
+{
+  name      = trail_contact
+  pwt       = 100
+  condition = MODE == TRAILING
+  updates   = TRAIL_INFO
+
+	runflag   = CHASING=true
+	idleflag  = CHASING=false
+
+	runflag = NODE_MESSAGE_LOCAL=src_node=$[OWNSHIP],dest_node=all,var_name=CHASER,string_val=$[OWNSHIP]
+	idleflag = NODE_MESSAGE_LOCAL=src_node=$[OWNSHIP],dest_node=all,var_name=CHASER,string_val=any
+	
+              contact = abe
+       pwt_outer_dist = 130
+            nm_radius = 18
+               radius = 8
+          trail_angle = $(TRANG)
+          trail_range = 45
+
+     trail_angle_type = relative
+     on_no_contact_ok = true
+          extrapolate = true
+                decay = 30,60
+  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+

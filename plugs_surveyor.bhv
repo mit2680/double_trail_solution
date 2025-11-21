@@ -1,0 +1,40 @@
+initialize DEPLOY  = false
+initialize RETURN  = false
+initialize STATION = false
+initialize SURVEY  = false
+
+//-----------------------------------------------
+// Helm Behavior File
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE    = ACTIVE
+  STATION = false
+  RETURN  = true
+} 
+
+set MODE = SURVEYING {
+  MODE    = ACTIVE
+  STATION = false
+//  SURVEY  = true
+} STATIONING
+	
+//----------------------------------------------
+
+Behavior = BHV_Loiter
+{
+  name      = bhv_loiter
+  pwt       = 100
+  condition = MODE==SURVEYING
+
+         speed = 2.5
+     clockwise = best
+        radius = 8 
+     nm_radius = 20 
+  acquire_dist = 12
+
+       polygon = oval: x=15,y=-70, rad=15, len=140, ang=64
+}

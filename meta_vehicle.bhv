@@ -1,0 +1,10 @@
+//-----------------------------------------------
+// Helm Behavior File
+
+#ifdef VROLE chaser
+#include plugs_chaser.bhv 
+#elseifdef VROLE surveyor
+#include plugs_surveyor.bhv 
+#endif
+
+#include plugs_all.bhv

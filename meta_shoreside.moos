@@ -1,0 +1,136 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = shoreside
+
+#include plugs.moos <origin_warp>
+
+//--------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+}
+
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  qbridge  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, TRAIL
+
+  bridge   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED 
+  bridge   = src=PATROL, alias=PATROL
+//  bridge   = src=TRAIL, alias=TRAIL
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+           comms_range = 25000
+        critical_range = 2500
+      min_msg_interval = 0
+        max_msg_length = 10000
+  view_node_rpt_pulses = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = MIT_SP.tif
+  set_pan_x            = 10
+  set_pan_y            = -280
+  zoom                 = 1.1
+  vehicles_shape_scale = 1.9
+  vehicles_name_mode   = names
+
+	seglist_viewable_all    = false
+	polygon_viewable_labels = false
+	point_viewable_labels   = false
+	node_pulse_viewable_all = false
+  appcast_viewable        = true
+  appcast_color_scheme    = indigo
+
+	left_context[station]  = STATION_$[UP_VNAME_CLOSEST] = true
+	right_context[unstation] = STATION_$[UP_VNAME_CLOSEST] = false
+
+	scope = CONTACT_INFO
+
+  button_1 = DEPLOY_ALL  # DEPLOY_ALL=true 
+  button_1 = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_1 = RETURN_ALL=false # STATION_ALL=false
+  button_1 = TRAIL_ALL=true
+
+  button_2 = RETURN_ALL  # RETURN_ALL=true 
+  button_2 = TRAIL_ALL=false
+
+	button_3 = DEPLOY_CAL  # DEPLOY_CAL=true 
+  button_3 = RETURN_CAL=false # STATION_CAL=false 
+  button_3 = TRAIL_CAL=true
+
+  button_4 = RETURN_CAL  # RETURN_CAL=true 
+  button_4 = TRAIL_CAL=false
+
+  button_5 = DEPLOY_BEN  # DEPLOY_BEN=true 
+  button_5 = RETURN_BEN=false # STATION_BEN=false 
+  button_5 = TRAIL_BEN=true
+
+  button_6 = RETURN_BEN  # RETURN_BEN=true 
+  button_6 = TRAIL_BEN=false
+
+	button_7 = DEPLOY_ABE  # DEPLOY_ABE=true 
+  button_7 = RETURN_ABE=false # STATION_ABE=false 
+
+  button_8 = RETURN_ABE  # RETURN_ABE=true 
+
+}
+
+//--------------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+
+  File          = XLOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  Log = MOB_ALERT @ 0 nosync
+
+  // Log it all!!!!!
+  WildCardLogging = true
+}
