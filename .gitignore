@@ -1,0 +1,12 @@
+.svn/
+.git/
+.DS_Store
+**/logs/
+LOG*
+XLOG*
+targ_*
+vcolors.txt
+vpositions.txt
+vnames.txt
+*~
+
